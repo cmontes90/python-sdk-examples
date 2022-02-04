@@ -1,0 +1,27 @@
+# The following AWS CLI command creates a new member account:
+
+aws organizations create-account --email <newAccEmail> --account-name "<newAccName>" /
+--role-name <roleName>
+
+# This CLI command returns a request_id that uniquely identifies the request, 
+a value that is required for in Step 3.
+
+# The following CLI command, with the request_id returned in the previous step as an input parameter, 
+# verifies that the account was created:
+
+aws organizations describe-create-account-status --create-account-request-id <request_id>
+
+# The command returns the state of your account creation request 
+# and can have three different values: IN_PROGRESS, SUCCEEDED, and FAILED.
+
+# The following CLI command assumes a role from the Master account
+
+aws sts assume-role --role-arn <role-arn> --role-session-name <"role-session-name">
+
+# After you assume the role, build the new account’s networking, IAM, 
+and governance resources as explained in this section.
+
+# The following CLI command moves an account into an OU.
+
+aws organizations move-account --account-id <account_id> /
+--source-parent-id <source_parent_id> --destination-parent-id <destination_parent_id>
