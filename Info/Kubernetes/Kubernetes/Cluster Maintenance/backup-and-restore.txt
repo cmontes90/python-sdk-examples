@@ -1,0 +1,27 @@
+***Get in all the kubernetes objects from the kube-api server:
+
+kubectl get all --all-namespaces -o yaml > all-deploy-services.yaml
+
+***Backup ETCD
+
+etcdtl snapshot save snapshot.db
+etcdtl snapshot status snapshot.db
+
+etcdctl --endpoints=https://[127.0.0.1]:2379 \
+--cacert=/etc/kubernetes/pki/etcd/ca.crt \
+--cert=/etc/kubernetes/pki/etcd/server.crt \
+--key=/etc/kubernetes/pki/etcd/server.key \
+snapshot save /opt/snapshot-pre-boot.d
+
+****Restore ETCD
+
+service kube-apiserver stop 
+
+etcdctl snapshot restore snapshot.db --data-dir /var/lib/etcd-from-Backup
+
+Modidfy the etcd.service to use the new --data-dir=/var/lib/etcd-from-Backup
+
+systemctl daemon-reload
+systemctl etcd restart
+
+service kube-apiserver start

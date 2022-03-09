@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: ReplicaSet
+metadata:
+  name: myapp-replicaset
+  labels: # This labels does not have to match with the selector
+    app: myapp
+    type: front-end 
+spec:
+  template:
+    metadata:
+      name: my-pod
+      labels:
+        app: myapp
+        type: front-end
+    spec:
+      containers:
+        - name: ngnix-container
+          image: nginx
+  replicas: 3
+  selector:
+    matchLabels:
+      type: front-end
+
+# Replica-set can manage PODS that were not create it under this file
+# It use the selector to manage other pods
+
+# kubectl create -f replica-set.yaml
+
+# kubectl get replicaset
+# kubectl get rs
+# kubectl get rs --show-labels
+
+# kubectl describe replicaset myapp-replicaset
+
+# kubectl replace -f replica-set.yaml
+
+# kubectl scale --replicas=6 -f replica-set.yaml
+
+# kubectl scale --replicas=6 -replicaset myapp-replicaset
+
+# kubectl edit replicaset myapp-replicaset # It opens a temporary replicaset file that allows you to edit the object
+
+# kubectl delete replicaset myapp-replicaset  # Also deletes the underlyine PODS

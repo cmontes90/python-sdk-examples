@@ -1,0 +1,13 @@
+# etcd is a key value store db  that listens on port 2379
+
+./etcd set key1 value1
+# it sets a key and its value1
+
+./etcd get key1
+# it gets the value of key1
+
+./etcd
+# shows all the possible commands with etcd
+
+kubectl get pods -n kube-system 
+# List all the keys store by kubernetes

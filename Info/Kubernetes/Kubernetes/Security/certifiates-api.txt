@@ -1,0 +1,60 @@
+A non-admin user creates a key and certifcate signing request (csr) and send these to the admin
+
+Create a private key:
+openssl genrsa -out jane.key 2048
+
+Create a Certificate Signing Request (CSR) using the private key:
+openssl -req -new -key jane.key -subj "/CN=jane" -out jane.csr
+
+The administrator then takes the key and creates a CSR OBJECT
+
+Encode the jane.csr that the user sent you:
+
+cat jane.csr | base 64 ---> {encoded-csr}
+
+jane-csr.yaml
+
+apiVersion: certificates.k8s.io/v1
+kind: CertificateSigningRequest
+metadata:
+    name: akshay
+spec:
+    groups:
+        - system:authenticated
+    usages:
+        - client auth
+    signerName: kubernetes.io/kube-apiserver-client
+    request:
+        LS0tLS1CRUdJTiBDRVJUSUZJQ0FURSBSRVFVRVNULS0tLS0KTUlJQ1ZqQ0NBVDRDQVFBd0VURVBN
+        QTBHQTFVRUF3d0dZV3R6YUdGNU1JSUJJakFOQmdrcWhraUc5dzBCQVFFRgpBQU9DQVE4QU1JSUJD
+        Z0tDQVFFQXUwOG1kYy9yalBMSlUxSWNtRTdLRkZlUnh2VmpPRUFIeWNmUTV0YkJLYWJiCjR2elYw
+        QXFMRmpLN3c3KzhkVVpuTlJsM1VCOTM5THFDMmR0eERRenBzZDBON1BJYUsvbDdxS0xsTUVPc3g2
+        cGMKcElLYjM1ZHhxKzUwTFpCdnRqTEJVMFcyOWFaRDZWeG9IWkxubEtsZ2V0OXY0U3FCNHJSWHJ4
+        NUlydDZMdlhEbApwNnQyTnFnMysrTjVDblRkdnIvVkhlQWVrZTRJS3NidE5IWU1lVU1xSG90bGdN
+        eTN6cjZzbjFVQmJMQm9zRkEzCkRrQzVxdUdzWVpSVU1haForSVRZYWxsZ3NTdHFCUjV5MC9ka01l
+        NDc4anVmL2tucUN3ZitRNCtsY3ZDRDRyM3IKU2lORnNaSmV4RUFkSXZwZlhxV0kyNzNuZjdtQ0lS
+        UWdScDZRcjcvdUpRSURBUUFCb0FBd0RRWUpLb1pJaHZjTgpBUUVMQlFBRGdnRUJBSmw0aU5zbnJu
+        QVRGZk9jbFJHaTgzaVZ3UHYrckk5NkJsR0YwZHB2QzFxbnlEalJiSG5pCjB4NlJrT1lOeGdhN2VH
+        bnppZ05QTmlZLzl1c1JZQllSQXJxZUtHdW5ZelpieWs5M3dhdjFOVlNBNlNaeW8rRkYKMnRIcVFZ
+        MEZLK0lkRklMNDJobThWTXgzMEhhYnlFUmMvTi81b1FlWml6V1N2VlllSmhYTGlQU1dnU2NvRFhH
+        RAo5WEN1SDVKQnB5UU12VGpFYmVQM2Z6ZG5TY1JDeHBCMC94ZEF2MFFBR3pMSjNwNnloRURsOEE5
+        L3FKMzJ0blRZCldKcG43VUZjeEVYMGNGZGZmMzJQNE9vYjNSMytCaGp2a0EwT0s2MjdxVUt4MFVS
+        Rkh4NHNTWEJ0RUFHeVhEVXcKUHdmZ0FLeXJuck9raHZ5L08wci9UeTdDNU1PQmZOZy9Eb289Ci0t
+
+kubectl apply -f jane.csr
+
+All the CSR can be seen by the kubernetes administrator using the following command:
+
+kubectl get csr
+
+Approve the csr from jane:
+
+kubectl certificate approve jane
+kubectl certificate deny jane
+kubectl delete csr agent-smith
+
+View the approve certificate:
+
+kubectl get csr jane -o yaml
+
+Decode the certificate and send it to the user

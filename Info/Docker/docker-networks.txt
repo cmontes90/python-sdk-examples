@@ -1,0 +1,130 @@
+******Container Default Network
+
+# Bridge Network: 
+ - it is the default one
+ - all containers inside the host can communicate with each other
+ - the host and the contaniner are in different Network
+ - docker run ubuntu
+
+# Host Network:
+ - the host and the container are in the same Network
+ - docker run --network=host ubuntu
+
+ # None Network
+ - The container is deployed in no network, its completly isolated
+
+ *****User Defined Network
+
+ - You can create your own networks if you want isolate at the network one group of containers from other group
+ - Isolate front-end from back-end
+
+docker network create --driver bridge --subnet 182.16.0.0/16 <custom-isolated-network-name>
+docker network create --driver=bridge --subnet=182.18.0.1/24 --gateway=182.18.0.1 wp-mysql-network
+docker run -d --name=webapp -p 38080:8080 -e DB_Host=mysql-db -e DB_Password=db_pass123 --network=wp-mysql-network --link=mysql-db:mysql-db kodekloud/simple-webapp-mysql
+
+docker network ls
+docker inspect <container name>
+docker network inspect <network name> # to inspect an specific network
+
+docker network connect custon-net my-container 
+# connects a network to a container
+
+docker network disconnect custon-net my-container
+# disconnects a network from a container
+
+docker network rm custom-net
+docker network prune
+
+*****Embedded DNS
+
+- the container private ip can change when the system is reboot
+- all containers inside the host can resolve each other from their containers name
+- Docker has an embedded DNS resolution
+- The embedded DNS resolution will not work with the default bridge network
+- The embedded DNS WILL WORK with the bridge user defined network
+
+***** Network Namespaces
+
+ip netns add red # create
+ip netns add blue # create
+ip netns # list
+# It creates and list a network namespace in a linux HOST
+
+ip link
+# it list the interfaces of the default namespace
+
+ip netns exec red ip link
+ip -n red link
+# it list the interfaces of the red namespace 
+
+arp
+# list the arp table of the default namespace
+
+ip netns exec red arp
+# it list the arp table of the red namespace 
+
+route
+ip netns exec red route
+
+*** Creating interfaces on a namespace and link it with another interfaces
+
+
+ip link set veth-red netns red
+ip link set veth-blue netns blue
+# Creating interface link in the respective namespace
+
+ip link add veth-red type veth peer name veth-blue
+# creating peering between the two interface link
+
+ip -n red addr add 192.168.15.1 dev veth-red
+ip -n blue addr add 192.68.15.2 dev veth-red
+# Creating the two ip address on the respective links
+
+ip -n red link set veth-red up
+ip -n blue link set veth-blue up
+
+
+**** Creating a virtual switch with LINUX Bridge
+
+# Creating the virtual switch
+ip link add v-net-0 type bridge 
+ip link set dev v-net-0 up
+
+# deleting the red link, it will automatically deletes the blue link
+ip -n red link del veth-red 
+
+# Adding the peering links between the Namespaces and the virtual switch
+ip link add veth-red type veth peer name veth-red-br
+ip link add veth-blue type veth peer name veth-blue-br
+
+# Associating the links to the namespaces and to the virtual switch
+ip link set veth-red netns red
+ip link set veth-red-br master v-net-0
+
+ip link set veth-blue netns blue
+ip link set veth-blue-br master v-net-0
+
+# Creating the two ip address on the respective links
+ip -n red addr add 192.168.15.1 dev veth-red
+ip -n blue addr add 192.68.15.2 dev veth-red
+ip -n red link set veth-red up
+ip -n blue link set veth-blue up
+
+# If we want to reach the namespaces from our host, we can set an ip address to the virtual switch interface: v-net-0
+ip address add 192.168.15.5/24 dev v-net-0
+
+## Adding a gateway to the blue namespace so it can reach other hosts
+
+ip netns exec blue ip route add 192.168.1.0/24 via 192.168.15.5 # Adding the gateway in the namespace
+
+ip table -t nat -A POSTROUTING -S 192.168.15.0/24 -j MASQUERADE 
+
+## Adding a default gateway to the blue namespace so it can reach the internet
+
+ip netns exec blue ip route add default via 192.168.15.5
+
+### Adding a Forwarding rule so the namespace can be reach from the internet
+
+iptables -t nat -A PREROUTING --dport 80 --to-destination 192.168.15.2:80 -j DNAT
+
+

@@ -1,0 +1,29 @@
+****** Linux Singals
+
+kill -SIGSTOP $(pgrep httpd)
+kill -SIGCONT $(pgrep httpd)
+kill -SIGTERM $(pgrp httpd)
+kill -SIGKILL $(pgrep httpd)
+kill -9 $(pgrep httpd)
+
+
+****** Docker Singals
+
+docker container pause web-app
+docker container unpause web-app
+
+docker container stop web-app
+
+docker container kill --signal=9 web-app
+
+
+***** Remove containers
+
+docker container rm webapp
+
+docker container stop $(docker container ls -q) # stop all the running containers
+docker container rm $(docker container ls -aq) # remove all the containers
+
+docker container prune # remove all the stop containers
+
+docker container run --rm ubuntu expr 4 + 5 # it removes the container immediately after it exits

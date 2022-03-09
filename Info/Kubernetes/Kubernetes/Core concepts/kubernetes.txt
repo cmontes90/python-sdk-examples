@@ -1,0 +1,80 @@
+******* Basic commands
+
+kubectl run hello-minikube # it creates a Deployment
+kubectl cluster info
+kubectl get nodes
+
+# kubectl get pods elephant -o yaml > elephant.yaml
+
+kubectl run my-web-app --image=my-web-app # it creates a POD
+
+kubectl run redis --image=redis -n finance
+
+kubectl run nginx --image=nginx --dry-run=client -o yaml
+# Generate POD Manifest YAML file (-o yaml). Don’t create it(–dry-run)
+
+kubectl expose pod redis --port=6379 --name redis-service --dry-run=client -o yaml
+# Create a Service named redis-service of type ClusterIP to expose pod redis on port 6379
+
+kubectl create service clusterip redis --tcp=6379:6379 --dry-run=client -o yaml
+# this will not use the pods labels as selectors, instead it will assume selectors as app=redis
+
+kubectl expose pod nginx --type=NodePort --port=80 --name=nginx-service --dry-run=client -o yaml
+# Create a Service named nginx of type NodePort to expose pod nginx’s port 80 on port 30080 on the nodes
+
+kubectl run redis --image=redis:alpine --dry-run=client -o yaml > redis-pod.yaml
+
+
+## Declarative way
+
+kubectl apply -f nginx.yaml
+# It is used for creating, updating or deleting an object
+
+kubectl apply -f /path/to/config-files
+# You can specify a directory to create, update or delete several objects
+
+***** Namespaces
+
+kubectl get namespaces
+kubectl get pods --namespace=kube-system
+kubectl get pods --all-namespaces
+kubectl create -f pod-definition.yaml --namespace=dev   
+kubectl create -f pod-definition.yaml # The namespace has been defined in the .yaml file
+kubectl create -f namespace.yaml
+kubectl create namespace dev
+kubectl config set-context $(kubectl config current-context) --namespace=dev
+
+## Creating a namespace
+
+namespace-dev.yaml
+
+apiVersion: v1
+kind: Namespace
+metadata:
+    name: dev
+
+kubectl create  -f namespace-dev.yaml
+
+kubectl create namespace dev
+
+### Setting the default namespace
+
+kubectl config set-context $(kubectl config current-context) --namespace=dev
+
+
+#### Create a Resource Quota for a Namespace
+
+compute-quota.yaml
+
+apiVersion: v1
+kind: ResourceQuota
+metadata:
+    name: compute-quota
+    namespace: dev
+spec:
+    hard:
+        pods: "10"
+        requests.cpu: "4"
+        requests.memory: 5Gi
+        limits.cpu: "10"
+        limits.memory: 10Gi

@@ -1,0 +1,58 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: simple-webapp-color
+  namespace: dev # Setting a specific namespace
+  labels:
+    app: myapp
+    type: front-end
+spec:
+  containers: # A list, because a POD can have multiple containers
+    - name: simple-webapp-color
+      image: simple-webapp-color
+  resources:
+    requests:
+      memory: "1Gi"
+      cpu: 1
+    limits:
+      memory: "2Gi"
+      cpu: 2
+
+apiVersion: v1
+kind: LimitRange
+metadata:
+  name: cpu-limit-range
+spec:
+  limits:
+  - default:
+      cpu: 1
+    defaultRequest:
+      cpu: 0.5
+    type: Container
+
+apiVersion: v1
+kind: LimitRange
+metadata:
+  name: mem-limit-range
+spec:
+  limits:
+  - default:
+      memory: 512Mi
+    defaultRequest:
+      memory: 256Mi
+    type: Container
+
+# The default resource allocation for a Pod on a Node is 0.5 CPU and 256 Mi and the limits are 1 CPU and 512Mi
+# For the POD to pick up those defaults you must have first set those as default values 
+# for request and limit by creating a LimitRange in that namespace
+
+# If you required more resources, you can set it on the definition.yaml file
+# The lowest value that you can set for CPU is 1m (mili)
+# 1 CPU us equal to 1 vCPU
+# By default, a limit is set of 1 vCPU and 512Mi
+# If you want to change the limits, you can set in the definition.yaml file
+# The Pod will be Throttle if it tries to consume more vCPU than the limit
+# The Pod can exceed the memory limit, but if the memory is exceeded constantly then the Pod will be terminated 
+
+
+kubectl describe pod elephant  | grep -A9 State

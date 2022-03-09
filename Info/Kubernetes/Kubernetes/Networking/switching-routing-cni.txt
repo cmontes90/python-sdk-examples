@@ -1,0 +1,60 @@
+****** SWITCHING
+ip link = list the interface and modify it 
+to persist all of the switching and routing change accross reboots you must set this conf in the /etc/network/interfaces file
+
+***System 1:
+
+**Establishing ip address
+
+*host-a: ip addr add 192.168.1.10/24 dev eth0
+*host-b: ip addr add 192.168.1.11/24 dev eth0
+
+***System 2:
+
+**Establishing ip address
+
+*host-c: ip addr add 192.168.2.10/24 dev eth0
+*host-d: ip addr add 192.168.2.11/24 dev eth0
+
+****** ROUTING
+
+***Checking the routes: route
+
+**Establishing a route to System 2 and a default gateway on System 1
+
+*host-a and host-b: 
+    ip route add 192.168.2.0/24 via 192.168.1.1
+    ip route add default via 192.168.1.1
+
+**Establishing a route to System 1 and a default gateway on System 2
+
+*host-c and host-d: 
+    ip route add 192.168.1.0/24 via 192.168.2.1
+    ip route add default via 192.168.2.1
+
+
+**** Establishing a host as a router
+
+Modify the file /proc/sys/net/ipv4/ip_forward to 1
+to persist this change accross reboots, modify the value of net.ipv4.ip_forward = 1 in the /etc/sysctl.conf
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,23 @@
+kubeadm upgrade plan
+# it shows the current version of all the components in the cluster 
+    (cluster, kubeadm, API Server, Controller Manager, Scheduler, Kube Proxy)
+    and it shows the latest stable version
+# After the upgrade of each component, you must upgrade manually the kubelet
+
+*** Steps to upgrade the cluster with kubeadm
+
+upgrade kubeadm: apt-get upgrade -y kubeadm=1.12.0-00
+
+upgrade the cluster components: kubeadm upgrade apply v1.12.0
+
+upgrade kubelet on the master: apt-get upgrade -y kubelet=1.12.0-00
+                               systemctl restart kubelet
+
+upgrade kubeadm and kubelet on the worker nodes:
+
+Drain the node: kubectl drain node01 # this is done on the master node, to drain the worker node01
+upgrade kubeadm: apt-get upgrade -y kubeadm=1.12.0-00
+upgrade kubelet: apt-get upgrade -y kubelet=1.12.0-00
+update the node configuration with the new kubelet version: kubeadm upgrade node config --kubelet-version v1.12.0
+restart kubelet: systemctl restart kubelet
+unschedule the node: kubectl uncordon node01 # this is done on the master node, to unschedule the worker node01

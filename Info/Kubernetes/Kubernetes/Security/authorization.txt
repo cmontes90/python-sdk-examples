@@ -1,0 +1,12 @@
+Authorization modes
+
+- AlwaysAllow (default)
+- AlwaysDeny
+- ABAC
+- RBAC
+- Node
+- Webhook
+
+You can define the authorization mode in the Kube API Service
+
+You can Specify multiple authorization modes, in this case, it will be apply by order until one of them give access or all of them deny access

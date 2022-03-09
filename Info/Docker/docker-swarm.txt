@@ -1,0 +1,186 @@
+******* Docker Swarm
+
+- You must configure static IP on all the nodes that conform the cluster
+- You must open the following ports:
+    # TCP 2377: Cluster Management Communications
+    # TCP and UDP 7946: Communications among nodes
+    # UDP 4789: Overlay network
+
+docker swarm init
+# Command to be run on the manager host
+# It initialize the swarm cluster
+
+docker system info | grep -i swarm
+# To check if the swarm is active
+
+docker swarm --token XXXXXX <host-manager-ip:2377>
+# commnd to be run in the worker nodes if they want to join the cluster
+# The token is given when you initialize the swarm cluster in the host manager
+
+docker swarm join-token worker
+# You can run this command to get the token again
+
+docker swarm join-token manager
+# it creates the token to add more managers
+
+docker node ls
+# checks the nodes in the cluster 
+
+docker node inspect <hostname> --pretty
+
+docker node promote workerone (name of the host)
+# It is used to promote a node from worker to manager
+# The promotion of a node can only be executed in the manager node
+
+docker node demote workerone
+# It is used to demote a node from manager to worker
+
+docker node update --availability drain workerone
+# It's used to take out a node from the cluster while redistributing the load to the remaining nodes
+
+docker node update --availability activate workerone
+# It brings back workerone to the cluster
+
+### Removing a node from a cluster
+
+1. In the manager node run docker node update --availability drain workerone
+2. In the worker node run docker swarm leave
+3. go to the manager node and run docker node rm workerone
+
+
+### Force new cluster creation
+
+docker swarm init --force-new-cluster
+# it force the creation of a new cluster in case that you lose quorum
+
+docker node promot
+
+
+### Lock your Swarm Cluster
+
+docker swarm init --autolock=true
+docker swarm update --autolock=true
+# This commands will lock the swarm cluster and it will return a key that you can use to unlock the cluster
+
+docker swarm unlock 
+# It will unlock the cluster, you must input the key
+
+docker swarm unlock-key
+# you can view the current unlock key using docker swarm unlock-key without any arguments
+
+######## SWARM SERVICES
+
+docker service create --replicas=3 httpd
+
+docker service create --name=firstservice -p 80:80 httpd:alpine
+
+docker service ls
+
+docker service ps firstservice
+
+docker service inspect firstservice --pretty
+
+docker service logs firstservice
+
+docker service rm firstservice
+
+### Service - Scale UP 
+
+docker service update --replicas=3 -p 80:80 web
+
+docker service update --replicas=2 -p 80:80 web
+
+docker service scale webapp=4
+
+
+### Service - Rolling update
+
+docker service update -p 80:80 --image=web:2 web 
+# it will update one after the other
+
+docker service update -p 80:80 --update-delay=60s --image=web:3 web
+# it will add a delay of 60 sec between each update
+
+docker service update -p 80:80 --update-parallelism=3 --image=web:2 web
+# updates 3 containers at a time
+
+docker service update -p 80:80 --update-failure-action=<pause|continue|rollback> --image=web:2 web
+
+docker service rollback web
+docker service update --rollback web
+# It rolls back to the previous version
+
+docker service inspect web
+
+
+### Global Services 
+
+docker service create --mode=global agent
+# it creates only one container per host. Usefull when you need to install agents on all the host of the cluster
+
+
+### Placement in Docker Swarm
+
+# Labels
+docker node update --label-add type=cpu-optimized worker1
+docker node update --label-add type=memory-optimized worker2
+docker node update --label-add type=gp worker1
+
+# Constraints
+docker service create --constraint=node.labels.type==cpu-optimized batch-processing
+docker service create --constraint=node.labels.type==memory-optimized realtime-analytics
+docker service create --constraint=node.labels.type!=memory-optimized batch-processing
+docker service create --constraint=node.role==worker batch-processing
+
+Orchestrator: responsible for creating tasks in swarm
+Scheduler: responsible for instructing a worker to run a task
+Dispatcher: assigns tasks to nodes in swarm
+Allocater: is used to allocate IP addresses to tasks in swarm
+
+
+
+###### Docker Configs 
+
+# Creating
+docker config create nginx-conf /tmp/nginx.conf
+docker service create --replicas=4 --config src=nginx-conf,target="/etc/nginx/nginx.conf" nginx
+
+# Removing
+docker service update --config-rm nginx-conf nginx
+docker config rm nginx-conf
+
+# Updating
+docker config create nginx-conf-new /tmp/nginx-new.conf
+docker service update --config-rm nginx-conf --config-add nginx-conf-new nginx
+
+
+##### Docker Overlay network
+
+docker network create -d overlay my-overlay
+docker network create --driver overlay my-overlay-network
+
+docker network create --driver overlay --subnet 10.15.0.0/16 my-overlay-network
+
+docker network create --driver overlay --attachable my-overlay-network 
+# Non swarm cluster nodes can attach to this network
+
+docker network create --driver overlay --opt encrypted my-overlay-network 
+docker network create --driver overlay -o encrypted=true my-overlay-network
+# Management network data is encrypted with AES256 by dafualt, but application data is not encrypted
+# Use this command to encrypt application data
+
+docker service create --network my-overlay-network web-service
+# attaching web-service service to the overlay network
+
+docker network rm my-overlay-network
+docker network prune
+
+docker service create --publish published=80,target=5000 my-web-server
+docker service create --publish published=80,target=5000,protocol=udp my-web-server
+# another way to publish a port
+
+
+##### MACVLAN Networks
+
+docker network create --driver mcvlan -o parent=eth0 my-overlay-network
+# It could be Bridge or 802.1q trunk bridge

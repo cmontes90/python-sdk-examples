@@ -1,0 +1,50 @@
+******* Basic commands
+
+kubectl run hello-minikube # it creates a Deployment
+kubectl cluster info
+kubectl get nodes
+
+kubectl run my-web-app --image=my-web-app # it creates a Deployment
+
+
+***** Namespaces
+
+kubectl get pods --namespace=kube-system
+kubectl get pods --all-namespaces
+kubectl create -f pod-definition.yaml --namespace=dev   
+kubectl create -f pod-definition.yaml # The namespace has been defined in the .yaml file
+
+## Creating a namespace
+
+namespace-dev.yaml
+
+apiVersion: v1
+kind: Namespace
+metadata:
+    name: dev
+
+kubectl create  -f namespace-dev.yaml
+
+kubectl create namespace dev
+
+### Setting the default namespace
+
+kubectl config set-context $(kubectl config current-context) --namespace=dev
+
+
+#### Create a Resource Quota for a Namespace
+
+compute-quota.yaml
+
+apiVersion: v1
+kind: ResourceQuota
+metadata:
+    name: compute-quota
+    namespace: dev
+spec:
+    hard:
+        pods: "10"
+        requests.cpu: "4"
+        requests.memory: 5Gi
+        limits.cpu: "10"
+        limits.memory: 10Gi

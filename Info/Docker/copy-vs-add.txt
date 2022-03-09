@@ -1,0 +1,26 @@
+***** COPY vs ADD 
+
+FROM centos:7
+COPY /testdir  /testdir
+
+
+FROM centos:7
+ADD /testdir  /testdir
+
+FROM centos:7
+ADD app.tar.xz  /testdir # it adds the EXTRACT file into the /testdir directory
+
+FROM centos:7
+ADD http://app.tar.xz  /testdir # it downloads the file into /testdir
+RUN tar -xJf /testdir/app.tar.xz -C /tmp/app
+RUN make -C /tmp/app
+
+
+--- As a best practice try to use COPY whenever is possible
+- COPY is lighter and it is more readable
+
+FROM centos:7
+RUN curl http://app.tar.xz \
+         | tar -xcJ /testdir/file.tar.xz \
+         && yarn build \
+         && rm /testdir/file.tar.xz

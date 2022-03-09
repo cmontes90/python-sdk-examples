@@ -1,0 +1,14 @@
+*** What is the path of the directory holding the static pod definition files?
+
+- Execute: ps -aux | grep /usr/bin/kubelet and look for kubelet config file (a .yaml file)
+- Then open the .yaml file and look for the StaticPodPath: 
+    grep -i staticpod /var/lib/kubelet/config.yaml
+
+***** We just created a new static pod named static-greenbox. Find it and delete it
+
+- First, let's identify the node in which the pod called static-greenbox is created: 
+    kubectl get pods --all-namespaces -o wide
+- Next, SSH to node01 and identify the path configured for static pods in this node
+    ps -aux | grep /usr/bin/kubelet
+- Then open the .yaml file and look for the StaticPodPath: 
+    grep -i staticpod /var/lib/kubelet/config.yaml

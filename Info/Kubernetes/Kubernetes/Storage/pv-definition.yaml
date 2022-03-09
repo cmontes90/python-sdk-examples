@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-vol1
+spec:
+  accessModes:
+    - ReadWriteOnce  # ReadOnlyMany / ReadWriteOnce / ReadWriteMany
+  capacity:
+    storage: 1Gi
+
+  awsElasticBlockStore: # You have to create the EBS volume on AWS first
+    volumeID: <volume-id>
+    fsType: ext4
+
+
+# kubectl create -f persistent-volume.yaml
+# kubectl get persistentvolume

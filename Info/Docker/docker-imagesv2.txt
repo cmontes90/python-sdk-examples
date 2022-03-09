@@ -1,0 +1,109 @@
+docker images --no-trunc
+# List the full length image IDs
+
+docker images --filter "label=com.example.version"
+docker images --filter "label=com.example.version=1.0"
+# Show images with a given label
+
+****** Image Tag
+
+*** Retagging an image locally
+
+docker image list
+
+docker image tag  httpd:alpine httpd:customv1
+# the first tag is the old one
+
+*** Retagging an image to push it to a private registry
+
+docker image tag httpd:alpine gcr.io/company/httpd:customv1
+docker image push gcr.io/company/httpd:customv1
+
+***** Object Size
+
+docker system default
+# it shows information about each docker object: Images, Containers, Local Volvumes, Build Cache
+ - Total number
+ - Active
+ - Size
+ - Reclaimable size
+
+
+ ***** Removing Images
+
+docker rm httpd:customv1 
+# it removes only tag of the image IF there is more than one image with different tags
+# The image is removed when the last image tag is removed
+
+docker image prune -a
+# It will remove all the UNUSED Images
+
+***** Image Layers
+
+docker image history ubuntu
+# It shows you all the layers that were used to build the image (Dockerfile)
+
+
+***** Image inspect
+
+docker image inspect httpd
+docker image inspect httpd -f '{{.Os}}'
+docker image inspect httpd -f '{{.Architecture}}'
+docker image inspect httpd -f '{{.Os}} {{.Architecture}}'
+docker image inspect httpd -f '{{.ContainerConfig.ExposedPorts}}'
+
+
+***** Save and Load Images
+
+docker image save alpine:latest -o alpine.tar
+# It saves the alpine:latest image into a tar file (alpine.tar)
+
+docker image load -i alpine.tar
+# it extract the image from the alpine.tar file, usually in a restricted location
+
+***** Import and Export operations (Transform a Container into an image)
+
+docker export <container-name> > testcontainer.tar 
+docker container export webapp > mywebapp.tar
+# it transform the container into a tar file which contains the image
+
+docker image import testcontainer.tar newimage:latest
+# it extract the tar file into an image with the name that you choose
+
+**** Building images 
+
+docker image build -t . cmontes90/httpd-app:v1
+
+docker image build -t cmontes90/httpd-app:v2 --build-arg tomcat_version=8.5.8 .
+# The --build-arg parameter overrides the variable in the Dockerfile
+# The variable in the Dockerfile is ARG tomcat_version=8.5.6
+
+docker build -f /opt/myapp/Dockerfile.dev /opt/myapp -t webapp
+
+docker build /opt/my-custom-app
+
+docker build https://github.com/myaccount/myapp
+
+docker build https://github.com/myaccount/myapp#<branch>
+
+docker build https://github.com/myaccount/myapp:<folder>
+
+docker build -f Dockerfile.dev https://github.com/myaccount/myapp
+
+docker build https://github.com/kk/dca.git#dev:docker
+
+**** Docker container commit 
+
+docker container commit -a "Carlos" httpd custom-http
+
+docker container commit -a "Carlos Montes" -c 'CMD ["httpd", "-D", "FOREGROUND"] <container-name> <img-name-that-we-want-to-create>
+
+
+
+
+Configure the credentials store
+You need to specify the credentials store in $HOME/.docker/config.json to tell the docker engine to use it. 
+The value of the config property should be the suffix of the program to use (i.e. everything after docker-credential-). 
+
+https://docs.docker.com/engine/reference/commandline/login/#credentials-store
+

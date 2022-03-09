@@ -1,0 +1,7 @@
+Recursos de Landing Zone
+
+https://github.com/aws-samples/terraform-aws-sap-netweaver-on-hana
+https://aws.amazon.com/blogs/awsforsap/terraform-your-sap-infrastructure-on-aws/
+https://www.hashicorp.com/resources/aws-terraform-landing-zone-tlz-accelerator
+https://www.hashicorp.com/resources/terraform-landing-zones-for-self-service-multi-aws-at-eventbrite
+

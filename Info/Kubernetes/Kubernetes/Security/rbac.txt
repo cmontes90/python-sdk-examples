@@ -1,0 +1,51 @@
+**** Creating the role object
+
+developer-role.yaml
+
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role 
+metadata:
+    name: developer
+rules:
+    - apiGroups: [""]
+      resource: ["pods"]
+      verbs: ["list", "get", "create", "update", "delete"]
+      resourceNames: ["blue", "orange"]
+    - apiGroups: [""]
+      resource: ["ConfigMap"]
+      verbs: ["create"]
+
+kubectl create -f developer-role.yaml
+
+
+*** Creating the user-role binding 
+
+devuser-developer-binding.yaml
+
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+    name: devuser-developer-binding
+subjects:
+    - kind: user
+      name: dev-user
+      apiGroup: rbac.authorization.k8s.io
+roleRef:
+    kind: Role
+    name: developer
+    apiGroup: rbac.authorization.k8s.io
+
+kubectl create -f devuser-developer-binding.yaml
+
+kubectl get roles
+kubectl get rolebindings
+kubectl describe role developer
+
+*** Check permissions
+
+kubectl auth can-i create deployments --as dev-user
+kubectl auth can-i create pods --as dev-user
+kubectl auth can-i create pods --as dev-user --namespace test
+
+
+kubectl edit role developer -n blue

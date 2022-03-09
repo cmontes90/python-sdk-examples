@@ -1,0 +1,43 @@
+**** Connecting host-a with host-b throug DNS
+
+*** Modify the /etc/hosts on host-a 
+
+/etc/hosts
+
+192.168.1.11    db
+192.168.1.11    www.google.com
+
+-- host-a will refer to host-b as db or as www.google.com
+-- ping db, ssh db
+
+**** Using a DNS Server for name resolution:
+
+-- On all the host add the dns server ip address on the /etc/resolv.conf
+    nameserver      192.168.1.100
+    nameserver      8.8.8.8 # to resolve any name the the first nameserver doesn't know
+
+-- You can still have name resolution in the /etc/hosts, this will take priority over /etc/resolv.conf
+-- The priority of name resolution can be change on the /etc/nsswitch.conf 
+    hosts:      files dns # files refers to the /etc/hosts and dns refers to /etc/resolv.conf
+
+**** Forward all in the DNS Server
+
+-- to resolve any name that DNS server doesn't know you can add the following line in the DNS Server:
+    Forward ALL to 8.8.8.8
+
+
+**** Accessing servers by a short name rather than his fullname:
+
+- on the dns server you have the following
+    web.mycompany.com
+    nfs.mycompany.com
+    sql.mycompany.com
+    ...
+- If you want an access by a short name you can the following line in the /etc/resolv.conf
+    search mycompany.com
+
+
+**** Useful commands to query dns names:
+
+    - nslookup
+    - dig

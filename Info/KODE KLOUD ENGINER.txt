@@ -1,0 +1,54 @@
+1. Create a user with a non-interactive shell:
+
+adduser james -s /sbin/nologin
+
+
+2. There was some users data copied on Nautilus App Server 2 at /home/usersdata location by the Nautilus production support team in Stratos DC. 
+Later they found that they mistakenly mixed up different user data there. 
+Now they want to filter out some user data and copy it to another location. Find the details below:
+
+On App Server 2 find all files (not directories) owned by user james inside /home/usersdata directory 
+and copy them all while keeping the folder structure (preserve the directories path) to /blog directory.
+
+Finding files and copy with folder structure intact
+https://unix.stackexchange.com/questions/508285/finding-files-and-copy-with-folder-structure-intact
+https://unix.stackexchange.com/questions/83593/copy-specific-file-type-keeping-the-folder-structure/107647
+https://ostechnix.com/find-copy-certain-type-files-one-directory-another-linux/
+
+3. user on jump host has password-less SSH access to all app servers through their respective sudo users (i.e tony for app server 1). 
+Based on the requirements, perform the following:
+Set up a password-less authentication from user thor on jump host to all app servers through their respective sudo users.
+
+ssh-keygen -t rsa
+ssh-copy-id tony@172.16.238.10
+
+https://www.linode.com/docs/guides/use-public-key-authentication-with-ssh/
+https://www.techrepublic.com/article/how-to-use-secure-copy-with-ssh-key-authentication/
+https://www.enterprisedb.com/edb-docs/d/edb-backup-and-recovery-tool/installation-getting-started/installation-upgrade-guide/2.4/EDB_Postgres_Backup_and_Recovery_Installation_and_Upgrade_Guide.1.13.html
+
+
+Create a user named kirsty in App Server 1 without a home directory.
+
+ useradd -M <username>
+
+https://linuxhint.com/add-user-linux/
+
+4.
+	a. Delete all lines containing word software and save results in /home/BSD_DELETE.txt file. (Please be aware of case sensitivity)
+	b. Replace all occurrence of word the to for and save results in /home/BSD_REPLACE.txt file.
+
+sed 's/\bthe\b/their/g' BSD.txt > BSD_REPLACE.txt
+sed '/software/d' BSD.txt > BSD_DELETE.txt
+
+https://linuxize.com/post/how-to-use-sed-to-find-and-replace-string-in-files/
+https://www.folkstalk.com/2013/03/sed-remove-lines-file-unix-examples.html
+
+
+5. Creating a User with an Expiry Date
+
+sudo useradd -e 2021-01-28 ravi
+
+sudo chage -l ravi
+
+https://linuxize.com/post/how-to-create-users-in-linux-using-the-useradd-command/#:~:text=known%20as%20GECOS%20.-,Creating%20a%20User%20with%20an%20Expiry%20Date,YYYY%2DMM%2DDD%20format.
+

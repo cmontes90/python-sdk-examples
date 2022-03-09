@@ -1,0 +1,24 @@
+Certificate creation using openssl
+
+CERTIFICATE AUTHORITY (CA)
+
+Create a private key:
+openssl genrsa -out ca.key 2048
+
+Create a Certificate Signing Request (CSR) using the private key:
+openssl -req -new -key ca.key -subj "/CN=KUBERNETES-CA" -out ca.csr
+# CN identifies the name of the component the certifcate is for
+
+Create the Sign certificates:
+openssl x509 -req -in ca.csr -signkey ca.key -out ca.crt
+
+ADMIN USER:
+
+Create a private key:
+openssl genrsa -out admin.key 2048
+
+Create a Certificate Signing Request (CSR) using the private key:
+openssl -req -new -key admin.key -subj "/CN=kube-admin/O=system:masters" -out admin.csr
+
+Create the Sign certificates:
+openssl x509 -req -in admin.csr -CA ca.crt -CAkey ca.key -out admin.crt

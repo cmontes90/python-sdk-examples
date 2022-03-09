@@ -1,0 +1,29 @@
+docker run redis:4.0
+docker container run redis:4.0
+# It deploys a container with specific version image using TAG
+
+docker run -i KodeKloud/simple-prompt-docker  | RUN STDIN
+# It allows you to input a value when the dockerize application required us to do it
+
+docker container run -it KodeKloud/simple-prompt-docker  | RUN STDIN
+# it allows you input a value with the 'i' argument 
+# and the prompt of application will be shown in the terminal thanks to the 't' argument
+
+docker run -p 80:5000 KodeKloud/webapp  | PORT MAPPING
+docker run -p 8000:5000 KodeKloud/webapp1
+docker run -p 3306:3306 KodeKloud/mysql
+docker run -p 8306:3306 KodeKloud/mysql
+# Port mapping, the first port represent the Host port and the second one represent the container port
+# The host port must be unique in the host
+
+docker run -v /opt/datadir:/var/lib/mysql mysql | VOLUME MAPPING
+# By default, when you delete a container all its data is delete it as well
+# with volume mapping you can map a directory that contains the data inside the container to directory in the host 
+# in order to preserve the data after the deletion of the container
+# the first directory is from the host and second one is from the container
+
+docker inspect <container name>
+# It allows you to find details of a container in a JSON format
+
+docker logs <container name>
+# to check the logs of a container

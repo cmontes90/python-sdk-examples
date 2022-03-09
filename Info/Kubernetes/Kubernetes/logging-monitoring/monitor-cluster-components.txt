@@ -1,0 +1,21 @@
+***** Metric Server installation and Deployment
+
+** Download and install Metric-Server
+
+git clone https://github.com/kubernetes-incubator/metric-server.git
+
+kubectl create -f deploy/1.8+/
+
+** Check the performance Metrics
+
+kubectl top node
+kubectl top node --sort-by='cpu' --no-headers | head -1 
+kubectl top pod
+
+
+*** Checking logs on a kubernetes pod with 2 containers
+
+kubectl logs -f <pod-name> <container-name> 
+# The container name is only need it when you have 2 containers inside of the same pod
+
+kubectl logs -f event-simulator-pod event-simulator

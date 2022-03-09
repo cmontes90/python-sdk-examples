@@ -1,0 +1,6 @@
+kubectl get pods --selector app=App1
+# It gets only the pods that has the label 'app=App1'
+
+kubectl get pods --selector bu=finance --no-headers | wc -label
+kubectl get all --selector env=prod --no-headers | wc -l
+kubectl get pods --selector env=prod,bu=finance,tier=frontend

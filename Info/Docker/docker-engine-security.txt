@@ -1,0 +1,86 @@
+*****DAEMON CONFIGURATION FILES
+
+- It's located at /etc/docker/daemon.json
+
+{
+    "debug": true,
+    "hosts": ["tcp://192.168.1.125:2376"]
+
+### ENCRYPTION
+    "tls": true,
+    "tlscert": /var/docker/server.pem,
+    "tlskey": /var/docker/serverkey.pem,
+
+### AUTHENTICATION
+    "tlsverify": true,
+    "tlscacert": "/var/docker/caserver.pem
+}
+
+# It opens the docker daemon through the default port 2376 (ENCRYPTED)
+# The docker deamon on the host will be accesible from another host
+# on the other hosts, you must set export DOCKER_HOST="tcp://192.168.1.125:2376"
+
+--- On the host you must configure the following
+
+- export DOCKER_TLS=true
+- export DOCKER_HOST="tcp://192.168.1.125:2376"
+- For authentication, the daemon host wil shared the client.pem, clientkey.pem and cacert.pem
+- export DOCKER_TLS_VERIFY=true
+- configure docker --tlscert=<>, --tlskey=<> and --tlscacert=<> ps or we drop the certificate into the ~/.docker of the CLI User
+
+
+*******Security-Users
+
+docker run --user=1000 ubuntu sleep 1000
+# By default, docker runs its processes as ROOT, but you can change this by using the --user flag
+
+# You can change the default user in the Dockerfile instruction as well
+Dockerfile:
+FROM Ubuntu
+User 1000
+
+# The root user inside the container isn't really the same root user of the host. It has limited capabilities
+# You can see the full list of linux user capabilities at /usr/include/linux/capability.H
+# to add more capabilities to the root user used by the container, set docker run --cap-add=MAC_ADMIN ubuntu
+# to drop capabilities to the root user used by the container, set docker run --cap-drop=KILL ubuntu
+# set set docker run --privilege ubuntu to add all the capabilities
+
+
+***** Resoruce Limits - CPU 
+
+docker container run --cpu-shares=512 webapp4 
+# By default, cpu-shares is 1024, which basically define the amount of time/cpu a container can consume
+
+docker container run --cpusets-cpu=0-1 webapp1
+docker container run --cpusets-cpu=2-4 webapp1
+# If your host has several cpus, you can define which cpus the container will use with the --cpusets-cpu= flag
+
+docker container run --cpus=2.5
+# it define how much cpu will you use from the host
+
+docker container update --cpus=0.5
+# it updates the cpu counts of an existing container
+
+
+***** Resoruce Limits - MEMORY 
+
+docker container run --memory=512m webapp
+# Hard limit, it actually is 512m of RAM and an aditional 512m of swap disk if needed
+# if the container rans out of memory, then it gets killed
+
+docker container run --memory=512m --memory-swap=512m webapp
+# it limits the swap memory that you can use. The swap memory in this case, is the sum of RAM and swap
+# in this case, you wont get anything of SWAP space
+
+docker container run --memory=512m --memory-swap=768m
+# You will get 256m of swap space
+
+docker container run --memory=512m --memory-swap=-1 webapp
+# Unilimmited swap space
+
+docker container run -itd --name=test --memory=512m --memory-swap=-1 --memory-reservation=100m ubuntu 
+# it sets a minimum value with --memory-reservation flag
+
+
+docker container inspect webapp | grep -i mem
+# it will show the amount of memory allocated

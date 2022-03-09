@@ -1,0 +1,32 @@
+## Tains are apply to nodes, while Tolerations are apply to pods
+
+# TAINT
+
+kubectl taint nodes <node-name> key=value:taint-efect
+# The taint-effect could be any of the following three options:
+    NoSchedule ----------> it will not schedule the pod on the tainted node
+    PreferNoSchedule ---->  it will TRY not to schedule the pod on the tainted node
+    NoExecute -----------> it will delete any pod that was on the node before the tainted
+
+kubectl taint nodes node01 app=blue:NoSchedule
+
+kubectl taint nodes controlplane node-role.kubernetes.io/master:NoSchedule-
+# This command is used to UNTAINT a node
+
+# TOLERATION on pods
+
+apiVersion: v1
+kind: Pod 
+metadata:
+    name: myapp-pod
+spec:
+    containers:
+        - name: nginx
+          image: nginx
+    tolerations:
+        - key: "app"
+          operator: "equal"
+          value: "blue"
+          effect: "NoSchedule"
+
+kubectl describe nodes controlplane | grep -i taint

@@ -1,0 +1,25 @@
+**** POD eviction timeout
+
+kube-controller-manager --pod-eviction-timeout=5m0s
+# The time it waits for a POD to comeback online
+# The default value is 5 minutes
+# the master node waits 5 minutes, pass this time, it consider the Node dead
+
+*** Preparing a node for upgrades or patching
+
+kubectl drain node-1
+kubectl drain node01 --ignore-daemonsets
+# It takes out the pods from the node and recreat it on another node. It drains the workload
+# The node is marked as unschedulable 
+
+kubectl drain node01 --ignore-daemonsets --force
+# If a pod on the node is not part of a replica-set, then you have to use the --force parameter
+
+kubectl uncordon node-1
+# it marks the node as schedulable once again
+
+kubectl cordon node-1
+# it marks the node as unschedulable. It doesn't terminates the existing pods
+# New pods will not be schedule to this node
+
+

@@ -1,0 +1,58 @@
+docker version
+# It gives you the docker engine version
+
+docker --version
+# it gives you the version of the docker CLI
+
+docker system info
+# it gives you details about the host, the amount of containers, cpu, memory
+
+docker run <ngnix>
+# it is used to deploy a container, it will look for an image locally first, and if doesn't find any, 
+# it will pull it from docker hub
+# it excutes the task and then the container exited
+
+docker run -d --name webapp nginx:1.14-alpine
+# it run a container of the image nginx:1.14-alpine and it was named webapp
+
+docker run -it centos bash
+# it runs the centos image, executes tha bash command and it logged me into the container with '-it' option
+
+docker run KodeKloud/webapp
+# it runs the web app in foreground, not allowing you to excute any command until the web app stops
+
+docker run -d KodeKloud/webapp
+# it runs the web app in the background, allowing you to excute commands in the same terminal
+
+docker attach a043d
+# It attachs the container once again
+
+docker exec <container name> cat /etc/hosts
+# Executing a command on a running container
+
+docker ps - list containers
+# list all the running (UP) containers
+docker container ls - list containers
+# list all the running (UP) containers
+
+docker ps -a
+# list all the running(UP) and shutdown(EXITED) containers
+
+docker stop <container id or container name>
+# stop a container
+
+docker rm <container name or container id>
+# removes a container permanetly
+
+docker rm -f 44140f79774c
+# force the removal of a running container
+
+
+docker images
+# list images
+
+docker rmi <iamge name>
+# removes an image
+
+docker pull <image name>
+# pull an image from docker hub

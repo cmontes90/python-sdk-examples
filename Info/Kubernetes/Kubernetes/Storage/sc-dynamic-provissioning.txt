@@ -1,0 +1,54 @@
+*** Storage Class definition
+sc-definition.yaml
+
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+    name: google-storage
+provissioner: kubernetes.io/gce-pd
+parameters:
+    type: pd-standard [ pd-standard | pd-ssd ]
+    replication-type: none [ none | regional-pd ]
+
+*** Persistent Volume Claim definition
+pvc-definition
+
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: myclaim
+spec:
+  accessModes:
+    - ReadWriteOnce
+  StorageClassName: google-storage
+  resources:
+    requests:
+      storage: 500Mi
+
+** POD definition
+pod-definition.yaml
+
+apiVersion: v1
+kind: Pod
+metadata:
+  name: random-number-generator
+  namespace: dev 
+spec:
+  containers: 
+    - name: alpine
+      image: alpine
+      command: ["/bin/sh", "-c"]
+      args: ["shuf -i 0-100 -n 1 >> /opt/number.out;"]
+      volumeMounts:
+        - mountPath: /opt
+          name: data-volume
+  
+  volumes:
+    - name: data-volume
+      PersistentVolumeClaim:
+        claimName: myclaim
+
+
+*** Basic commands
+
+kubectl get sc

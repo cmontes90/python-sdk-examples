@@ -1,0 +1,11 @@
+docker run -d -p 5000:5000 --name registry registry:2
+# It deploys the container base on the regystry image aplication from docker hub
+# Which allows you to have a container registry on premise
+
+docker image tag=my-image localhost:5000/my-image
+
+docker push localhost:5000/my-image
+
+docker pull localhost:5000/my-image
+
+docker pull 192.168.23.12:5000/my-image

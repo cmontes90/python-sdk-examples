@@ -1,0 +1,158 @@
+**** New syntaxis
+
+docker container run -it ubuntu
+docker image build .
+docker container attach ubuntu
+docker container kill ubuntu 
+
+**** Create a new container
+
+docker container create httpd # it creates a container without starting or running it
+
+**** List containers
+
+docker container ls
+docker container ls -a
+docker container ls -l # shows the last container
+docker container ls -q # display a short container ID for running containers
+docker container ls -aq # display a short container ID for running and stop containers
+
+**** Start containers
+
+docker container start <container name or id>
+
+**** Create and Start containers
+
+docker container run <image name>
+
+*** Container Run - With Options
+
+docker container run -it ubuntu
+# 't' for terminal and 'i' for interactive, it will asociate the shell of the container with an interactive terminal
+- PRESS CTRL+p+q to detach from a container without exiting 
+
+*** Container Name
+
+docker container run -itd --name=webapp ubuntu
+docker container rename webapp custom-webapp # the old name goes first
+
+*** Container Run - Detached Mode
+
+docker container run -d httpd
+docker container attach 4cbf
+- PRESS CTRL+p+q to detach from a container without exiting 
+
+*** Remove a container
+
+docker container rm webapp
+
+
+**** Container Exec - Executing commands
+
+docker container exec ubuntu hostname
+docker container exec -it ubuntu /bin/bash # attach again to the container indicating an interactive terminal in bash
+
+**** Container inspect
+
+docker container inspect webapp
+
+*** Container Stats, Top, Log, System Events
+
+docker container stats # it checks the resource consumption of all the containers in the host
+docker container top web-app
+docker container logs web-app
+docker container logs -f web-app # to check the logs in real time
+docker system events --since 60m # it shows the recent events about the docker objects
+
+docker system df #  command displays information regarding the amount of disk space used by the docker daemon
+
+*** Container hostname
+
+docker container run -it --name=webapp --hostname=webapp ubuntu
+
+*** Container Restart policies
+
+docker container run --restart=no ubuntu 
+# Default, no restart
+
+docker container run --restart=on-failure ubuntu 
+# Only if the container crash or fails. if it exits with non 0 exit status. Killing the process to simulate this exit status
+
+docker container run --restart=always ubuntu 
+# Always, but no when the container was manually stop, just if the daemon was restart. It will restart regardless of the exit status
+
+docker container run --restart=unless-stopped ubuntu 
+# Always, but no when the container was manually stop, not even if the daemon was restart
+
+docker update --restart unless-stopped redis
+# This command changes the restart policy for an already running container named redis
+
+docker container update --restart unless-stopped $(docker container ls -q)  
+# command should be used to update all the running containers with unless-stopped policy
+
+docker container restart ubuntu # it will restart the container
+
+*** Container Live restore
+
+/etc/docker/daemon.json
+
+{
+    "debug": true,
+    "hosts": ["tcp://192.168.1.23:2376"],
+    "live-restore": true
+}
+
+- By default, if the docker daemon stops or crash, all the containers will stop as well
+- Set the "live-restore" to "true" so the containers can still running even if the daemon stops or crash
+- It reduce container downtime due to daemon crashes, planned outages, or upgrades
+
+
+**** Container cp - From Host to Containers and Viceversa
+
+docker container cp /tmp/web.conf webapp:/etc/web.conf # First is the soruce path, and the second is the destination. From host to container
+docker container cp webapp:/etc/web.conf /tmp/web.conf # from container to host
+docker container cp /tmp/app/ webapp:/opt/app # copying an entire directory 
+
+- You can copy a file from a stopped container.
+
+**** Container Port Publishing
+-p 192.168.1.10:8080:80/tcp
+-p 8080:80/udp
+
+docker run -p 8000:5000 webapp 
+# The webapp is accesible on host port 8000 in all the networks that the host is assoicated
+
+docker run -p 192.168.1.5:8000:5000 webapp
+# The webapp is accesible on host port 8000 only on the IP 192.168.1.5 that the host is assoicated
+
+docker run -p 127.0.0.1:8000:5000 webapp
+# Webapp not accesible from outside, just in the loopback address
+
+docker run -p 5000 webapp
+# webapp container has open the port 5000 and its mappped to a random ephimeral host port. 32768 - 60999
+# local port range is located at /proc/sys/net/ipv4/ip_local_port_range
+
+docker run -P webapp
+# it will publish the container port that is indicated in the EXPOSE section in the Dockerfile
+# a random ephimeral port will be selected for the host port
+
+docker run -P --expose=8080 webapp
+# it will publish the container port 8080 and select a random ephimeral port for the host port
+
+docker inspect webapp
+# In the section "ExposedPorts" you will find the publish ports from the container
+
+--- Docker use the IP tables on the host to do the port mapping 
+--- iptables -t nat -S Docker
+
+
+*** Docker Image search from the CLI
+
+docker search httpd
+
+docker search httpd --limit 2
+
+docker search --filter stars=10 httpd
+
+docker search --filter stars=10 --filter is-official=true
+

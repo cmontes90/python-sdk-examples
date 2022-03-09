@@ -1,0 +1,29 @@
+# Source code
+
+import os
+from flask import Flask
+
+app = Flask(__name__)
+
+...
+...
+
+color = os.environ.get('APP_COLOR')
+
+
+# Setting the environment variable
+
+export APP_COLOR=blue
+
+# Passing the environment variable into Docker run
+
+docker run -e APP_COLOR=green simple-webapp-color
+docker run -e APP_COLOR=pink simple-webapp-color
+docker run -e APP_COLOR=yellow simple-webapp-color
+
+# Use docker inspect to find the environment variable define in the container
+
+docker inspect simple-webapp-color
+# you can find the list of environment variables under "Config"
+
+docker run -v /opt/data:/var/lib/mysql -d --name mysql-db -e MYSQL_ROOT_PASSWORD=db_pass123 mysql

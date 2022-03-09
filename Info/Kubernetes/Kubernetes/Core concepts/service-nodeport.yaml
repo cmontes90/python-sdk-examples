@@ -1,0 +1,27 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: myapp-service
+spec:
+  type: NodePort
+  ports:
+    - port: 80 # Service Port
+      targetPort: 80 # Pod Port
+      nodePort: 30008 # Node Port
+      # The only mandatory field is port
+      # If you dont provide targetPort, it will take the value of port
+      # if no nodePort is set, then it will take a random value between 30000 - 32767
+  selector: # It is used to identify the pods
+    app: myapp
+    type: front-end
+
+
+# kubectl create - f service-nodeport.yaml
+# kubectl get services
+# kubectl get svc
+# kubectl delete svc SERVICE-NAME
+# kubectl delete services SERVICE-NAME
+
+# Service Port ranges: 30000 - 32767
+
+# A NodePort service exposes a deployment on all the nodes on which the PODs of that deployment are running or NOT

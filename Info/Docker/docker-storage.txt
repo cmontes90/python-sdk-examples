@@ -1,0 +1,20 @@
+docker volume create data_volume
+# it creates a persistent volume called data_volume (folder) on the host
+
+docker run -v data_volume:/var/lib/mysql mysql
+# it maps the data from the mysql database which is located in the directory /var/lib/mysql 
+# to the directory data_volume which is the volume that was created before
+
+docker run -v data_volume2:/var/lib/mysql mysql
+# the data_volume2 directory will be automatically created on the host and be mount it on the container
+
+# ALL THE FILES FROM THE CONTAINERS, INCLUDING THE VOLUMES, CAN BE CHECKED ON THE HOST IN THE FOLDER /var/lib/docker
+
+# Bind mounts
+
+docker run -v /data/mysql:/var/lib/mysql mysql
+# this is a BIND mount not a VOLUME mount, which it means that the folder /data/mysql 
+# is not on the default location for the container /var/lib/docker
+
+docker run --mount type=bind, source=/data/mysql,target=/var/lib/mysql mysql
+# New way to mount a volume on the container

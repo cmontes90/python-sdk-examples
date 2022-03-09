@@ -1,0 +1,8 @@
+docker -H=10.123.2.1:2375 run ngnix
+# It allows you to deploy a container on a remote host that has the container engine  
+
+
+### cgroups ###
+
+docker run --cpus=.5 ubuntu # it limits the amount of cpu that the container can use, 50% is the limit in this case
+docker run --memory=100m ubuntu # it limits the amount of memory that the container can use, 100m is the limit in this case

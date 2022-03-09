@@ -1,0 +1,18 @@
+kubectl rollout status deployment/myapp-deploy
+# Check the status of the rollout deployment
+
+kubectl rollout history deployment/myapp-deploy
+# Check the history rollout of the deployment
+
+
+*** Update a deployment
+
+kubectl apply -f deployment.yaml
+
+kubectl set image deployment/myapp-deploy nginx=nginx:1.9.1
+
+kubectl edit deployment/myapp-deploy 
+
+*** Rollback to a previous deployment version 
+
+kubectl rollout undo deployment/myapp-deploy

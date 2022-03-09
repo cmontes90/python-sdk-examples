@@ -1,0 +1,30 @@
+# Commands
+
+CMD command parameter
+CMD ["command", "parameter"]
+
+FROM Ubuntu
+CMD sleep 5
+
+docker run ubuntu-sleeper # It will sleep for 5 seconds
+docker run  ubuntu-sleeper sleep 10 # It will overrite the sleep 5 in the dockerfie
+
+# Entrypoint
+
+FROM Ubuntu
+ENTRYPOINT ["sleep"]
+
+docker run ubuntu-sleeper 10 # It will APPEND the 10 to the sleep on the Entrypoint
+docker run ubuntu-sleeper # You will get an error because sleep has no argument
+
+# ENTRYPOINT and CMD
+
+FROM ubuntu
+ENTRYPOINT ["sleep"]
+CMD ["5"]
+
+docker run ubuntu-sleeper # It will take the entrypoint "sleep" and the cmd "5" as an argument
+docker run ubuntu-sleeper 10 # It will OVERRIDE the value of CMD (5)
+# For this to happen, you must specify the Entrypoint and CMD in a JSON format
+
+docker run --entrypoint sleep2.0 ubuntu-sleeper 10 # If you want to override the ENTRYPOINT and CMD

@@ -1,0 +1,33 @@
+**** Logging Drivers
+
+tail -5 /var/log/messages
+
+docker logs nginx
+
+docker system info # you can find the logging driver
+
+- you can find the logs at /var/lib/docker/containers
+- is a .json file with the name of the container id
+
+- you can change the default logging driver by modifying the /etc/docker/daemon.json
+
+{
+    "debug": true,
+    "hosts": ["tcp://192.168.1.125:2376"]
+    "tls": true,
+    "tlscert": "/var/docker/server.pem",
+    "tlskey": "/var/docker/serverkey.pem",
+    "log-driver: "awslogs",
+    "log-opt": {
+        "awslogs-region": "us-east-1"
+    }
+}
+
+- You must pass the AWS credentials into the host in order to push the logs to aws cloudwatch
+
+docker run -d --log-driver json-file nginx # overrides the logging driver set at /etc/docker/daemon.json
+
+docker container inspect nginx
+# inspect the logging driver type under HostConfig-LogConfig-Type
+
+docker container inspect -f '{{.HostConfig.LogConfig.Type}}' nginx

@@ -1,0 +1,54 @@
+docker volume create data_volume
+# it creates a persistent volume called data_volume (folder) on the host
+
+
+docker run -d --name webapp --mount source=vol2,target=/app httpd
+docker run -d --name webapp -v vol2:/app httpd
+docker run -d --name webapp --volume vol2:/app httpd
+
+
+docker run -v data_volume:/var/lib/mysql mysql
+# it maps the data from the mysql database which is located in the directory /var/lib/mysql 
+# to the directory data_volume which is the volume that was created before
+
+docker run -v data_volume2:/var/lib/mysql mysql
+# the data_volume2 directory will be automatically created on the host and be mount it on the container
+
+# ALL THE FILES FROM THE CONTAINERS, INCLUDING THE VOLUMES, CAN BE CHECKED ON THE HOST IN THE FOLDER /var/lib/docker
+
+# Bind mounts
+
+docker run -v /data/mysql:/var/lib/mysql mysql
+# this is a BIND mount not a VOLUME mount, which it means that the folder /data/mysql 
+# is not on the default location for the container /var/lib/docker
+
+docker run --mount type=bind, source=/data/mysql,destination=/var/lib/mysql mysql
+docker run --mount type=bind, source=/data/mysql,target=/var/lib/mysql mysql
+# New way to mount a volume on the container
+# In the bind method, you will not see the the volumes using docker volumes ls
+
+
+
+docker volume inspect data_volume
+# It checks details about the volume: createdAt, driver, labels, mountpoint, name, options, scope
+
+docker volume remove data_volume
+docker volume prune
+# It removes unused volumes
+
+
+docker container run --mount source=data_vol1,destination=/var/www/html/index.html,readonly httpd
+# it sets the volume as readonly
+# By default, volumes that are RW, you can check this at "docker container inspect my-container" under "Mounts"
+
+docker run -d --name webapp --mount source=vol3,target=/opt,readonly httpd
+docker run -d --name webapp -v vol3:/opt:ro httpd
+docker run -d --name webapp --volume vol3:/opt:ro httpd
+
+docker volume create test_volume
+docker container run -itd --name=test -v test_volume:/yogesh centos:7
+# Now you can access the container and check the volume mounted using df -h
+
+
+
+docker run -it --name mysql --volume-driver rexray/ebs --mount src=ebs-vol,target=/var/lib/mysql mysql

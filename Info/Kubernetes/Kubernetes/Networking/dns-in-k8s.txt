@@ -1,0 +1,4 @@
+Hostname        Namespace       Type        Root                Ip address
+web-service     apps            svc         cluster.local       10.107.37.188
+10-244-2-5      apps            pod         cluster.local       10.244.2.5
+10-244-1-5      default         pod         cluster.local       10.244.1.5

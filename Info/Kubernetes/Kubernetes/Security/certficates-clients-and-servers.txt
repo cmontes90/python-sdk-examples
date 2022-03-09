@@ -1,0 +1,15 @@
+Client Certificates for clients:
+
+- Admin
+- Scheduler
+- Control Manager
+- Kube-proxy
+- apiserver-kubelet
+- apiserver-etcd
+- kubelet
+
+Server Certificates for Servers:
+
+- etcd
+- apiserver
+- kubelet

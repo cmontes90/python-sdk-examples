@@ -1,0 +1,32 @@
+dockerd
+# it allows you to start docker service daemon in the foreground for troubleshooting
+
+dockerd --debug
+# it allows you to get details about the docker service for troubleshooting
+
+dockerd --debug --host=tcp://192.168.1.125:2375
+# It opens the docker daemon through the default port 2375 (UNENCRYPTED)
+# The docker deamon on the host will be accesible from another host
+# on the other hosts, you must set export DOCKER_HOST="tcp://192.168.1.125:2375"
+
+dockerd --debug --host=tcp://192.168.1.125:2375 --tls=true --tlscert=/var/docker/server.pem --tlskey=/var/docker/serverkey.pem
+# It opens the docker daemon through the default port 2376 (ENCRYPTED)
+# The docker deamon on the host will be accesible from another host
+# on the other hosts, you must set export DOCKER_HOST="tcp://192.168.1.125:2376"
+
+*****DAEMON CONFIGURATION FILES
+
+- It's located at /etc/docker/daemon.json
+
+{
+    "debug": true,
+    "hosts": ["tcp://192.168.1.125:2376"]
+    "tls": true,
+    "tlscert": /var/docker/server.pem,
+    "tlskey": /var/docker/serverkey.pem
+}
+
+- with this configuration file, you just need to run the dockerd command with any parameters
+- This configuration file is also read when we run the systemctl start docker command
+
+tail -5 /var/log/messages

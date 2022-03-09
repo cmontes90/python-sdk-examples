@@ -1,0 +1,36 @@
+cluster-admin-role.yaml
+
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole 
+metadata:
+    name: cluster-administrator
+rules:
+    - apiGroups: [""]
+      resource: ["nodes"]
+      verbs: ["list", "get", "create", "delete"]
+
+kubectl create -f cluster-admin-role.yaml
+
+
+*** Creating the user-role binding 
+
+cluster-admin-role-binding.yaml
+
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+    name: cluster-admin-role-binding
+subjects:
+    - kind: User
+      name: cluster-admin
+      apiGroup: rbac.authorization.k8s.io
+roleRef:
+    kind: ClusterRole
+    name: cluster-administrator
+    apiGroup: rbac.authorization.k8s.io
+
+kubectl create -f cluster-admin-role-binding.yaml
+
+
+kubectl get clusterroles
+kubectl get clusterrolebindings

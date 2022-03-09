@@ -1,0 +1,37 @@
+Security at the container level overrides security at the POD level
+
+**** AT THE CONTAINER LEVEL
+
+apiVersion: v1
+kind: Pod
+metadata:
+  name: my-pod
+  labels:
+    app: myapp
+    type: front-end
+spec:
+  containers:
+    - name: ngnix
+      image: ngnix
+      command: ["sleep", "3600"]
+      securityContext:
+        runAsUser: 1000
+        capabilities: ### capabilities are only support at the container level
+            add: ["MAC_ADMIN"]
+
+**** AT THE POD LEVEL
+
+apiVersion: v1
+kind: Pod
+metadata:
+  name: my-pod
+  labels:
+    app: myapp
+    type: front-end
+securityContext:
+  runAsUser: 1000
+spec:
+  containers:
+    - name: ngnix
+      image: ngnix
+      command: ["sleep", "3600"]

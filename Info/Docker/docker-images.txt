@@ -1,0 +1,11 @@
+docker build .
+docker build Dockerfile -t cmontes90/my-custom-app
+docker build . -t cmontes90/my-custom-app
+# it allows you to build an image based on a Dockerfile
+
+
+docker push cmontes90/my-custom-app 
+# push the image to docker hub
+
+docker login
+# to login in docker hub

@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: myapp-pod
+  namespace: dev # Setting a specific namespace
+  labels:
+    app: myapp
+    type: front-end
+spec:
+  containers: # A list, because a POD can have multiple containers
+    - name: ngnix-container
+      image: nginx
+  nodeName: node02
+
+# Sheduling selects the nodeName by default, you don't have to set it manually
+# If you set it manually, you have to do it when you launch the pod
+# Look up the pod-bind-def.yaml to see how to set a nodeName after you create the pod

@@ -1,0 +1,24 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: myapp-pod
+  namespace: dev # Setting a specific namespace
+  labels:
+    app: myapp
+    type: front-end
+spec:
+  containers: # A list, because a POD can have multiple containers
+    - name: ngnix-container
+      image: nginx
+
+# Under metadata you must input whatever kubernetes is expected
+# Under labels you can input any value that you want
+
+# kubectl run ngnix --image nginx
+# kubectl create -f pod-definition.yaml
+# kubectl apply -f pod-definition.yaml
+# kubectl get pods
+# kubectl get pods -o wide # it gives you additional info, Node that is being used
+# kubectl describe pod nginx # It gives you more details
+# kubectl delete pod
+# kubectl delete -f ./pod.json

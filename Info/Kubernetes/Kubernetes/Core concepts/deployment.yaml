@@ -1,0 +1,51 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: myapp-deployment
+  labels:
+    app: myapp
+    type: front-end
+spec:
+  template:
+    metadata:
+      name: my-pod
+      labels:
+        app: myapp
+        type: front-end
+    spec:
+      containers:
+        - name: ngnix-container
+          image: nginx
+  replicas: 3
+  selector:
+    matchLabels:
+      type: front-end
+
+
+# kubectl create -f deployment.yaml
+# kubectl create -f deployment.yaml --record 
+## it records the command (CHANGE-CAUSE) into the rollout history and into the describe result under 'Annotations'
+## You can use the flag '--record' on all commads to record 
+
+# kubectl apply -f deployment.yaml
+# kubectl get deployments
+# kubectl describe deployments myapp-deployment
+
+# kubectl rollout status deployment/myapp-deployment
+# kubectl rollout history deployments
+
+# kubectl apply -f deployment.yaml
+# kubectl set image deployment/myapp-deployment nginx=nginx:1.9.1
+
+# kubectl rollout undo deployment/myapp-deployment
+
+# kubectl run nginx --image=nginx
+
+# kubectl delete deployment deployment-name 
+
+# kubectl edit deployment nginx
+
+# kubectl expose deployment nginx --port=80
+
+
+# kubectl get all

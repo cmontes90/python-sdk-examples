@@ -1,0 +1,77 @@
+*** Getting info with security enable
+
+kubectl get pods \
+    --server my-kube-playground:6443 \
+    --client-key admin.key \
+    --client-certificate admin.crt \
+    --certificate-authority ca.crt
+
+*** Getting info using the KubeConfig file
+
+KubeConfig file
+    --server my-kube-playground:6443
+    --client-key admin.key
+    --client-certificate admin.crt
+    --certificate-authority ca.crt      
+
+kubectl get pods --kubeconfig config
+
+# By default the kubectl looks for a file in the $HOME/.kube/config
+# In this case you only has to execute: kubectl get pods
+
+**** KubeConfig file
+
+apiVersion: v1
+kind: Config 
+current-context: my-kube-admin@my-kube-playground
+
+clusters:
+
+    - name: my-kube-playground
+        cluster:
+            certificate-authority: ca.crt # Specify the whole path as a best practice
+            certificate-authority-data: {actual encoded data of the certificate} 
+            server: https://my-kube-playground:6443
+contexts:
+
+    - name: my-kube-admin@my-kube-playground
+        context:
+            cluster: my-kube-playground
+            user: my-kube-admin
+            namespace: test
+users:
+
+    - name: my-kube-admin
+        user:
+            client-certificate: admin.crt
+            client-key: admin.key
+
+
+*** Useful commands
+
+kubectl config view # it checks the KubeConfig file
+kubectl config view --kubeconfig=my-custom-config
+
+kubectl config use-context prod-user@production
+# Changes the current context of the KubeConfig file
+
+kubectl config --kubeconfig=/root/my-kube-config use-context research
+
+kubectl config --kubeconfig=/root/my-kube-config current-context
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

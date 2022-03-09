@@ -1,0 +1,56 @@
+***** MULTI STAGE BUILDS
+
+##### OPTION 1 Build with npm
+
+1. npm run build 
+    # JS build the application
+    # basically it put all the files and folders that conform the application into /dist directory
+
+2. Containerize for Production
+
+FROM nginx
+COPY dist /usr/share/nginx/html
+CMD [ "nginx", "-g", "daemon-off;" ]
+
+docker build -t my-app .
+
+###### OPTION 2 Build with an extra Dockerfile
+
+1. Build with Dockerfile  
+
+FROM node
+COPY . .
+RUN npm install
+RUN npm run build
+
+docker build -t builder .
+
+2. Extract build from the 1st image by applying a script
+
+docker container create --name builder builder
+docker container cp builder:dist ./dist
+docker container rm -f builder
+
+3. Containerize for Production
+
+FROM nginx
+COPY dist /usr/share/nginx/html
+CMD [ "nginx", "-g", "daemon-off;" ]
+
+docker build -t my-app .
+
+##### OPTION 3 MULTI STAGE BUILDS
+
+1.  Only 1 Dockerfile for the build and the production image
+
+FROM node AS builder
+COPY . .
+RUN npm install
+RUN npm run build
+
+FROM nginx
+COPY from=builder dist /usr/share/nginx/html
+CMD [ "nginx", "-g", "daemon-off;" ]
+
+docker build -t my-app .
+docker build --target builder -t builder . # target a specific stage in the Dockerfile
